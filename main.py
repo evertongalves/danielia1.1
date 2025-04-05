@@ -1,17 +1,20 @@
 from flask import Flask, request
 import requests
 import os
-import openai
+import openai  # Usaremos a biblioteca openai, porque DeepSeek segue o mesmo padrão!
 
 app = Flask(__name__)
 
 # Variáveis de ambiente
 TELEGRAM_TOKEN = os.getenv("BOT_TOKEN")
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
 TELEGRAM_API_URL = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/"
 
-# Configuração da API OpenAI — Novo formato (OpenAI Python v1.x.x)
-client = openai.OpenAI(api_key=OPENAI_API_KEY)
+# Configuração do cliente DeepSeek (usa a lib openai, com base_url deles!)
+client = openai.OpenAI(
+    api_key=DEEPSEEK_API_KEY,
+    base_url="https://api.deepseek.com/v1",
+)
 
 def send_message(chat_id, text):
     url = TELEGRAM_API_URL + "sendMessage"
@@ -31,19 +34,17 @@ def webhook():
 
         try:
             response = client.chat.completions.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {"role": "user", "content": user_message}
-                ]
+                model="deepseek-chat",
+                messages=[{"role": "user", "content": user_message}]
             )
             reply = response.choices[0].message.content.strip()
 
         except openai.RateLimitError:
-            reply = "Atenção! Limite de uso da OpenAI atingido."
+            reply = "Atenção! Limite de uso da DeepSeek atingido."
         except openai.APIError as e:
-            reply = f"Erro na API OpenAI: {str(e)}"
+            reply = f"Erro na API DeepSeek: {str(e)}"
         except openai.APIConnectionError:
-            reply = "Erro de conexão com a OpenAI."
+            reply = "Erro de conexão com a DeepSeek."
         except Exception as e:
             reply = f"Erro inesperado: {str(e)}"
 
