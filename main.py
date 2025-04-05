@@ -23,6 +23,7 @@ def send_message(chat_id, text):
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
+    print(f"Sua chave da OpenAI: {OPENAI_API_KEY}")
     data = request.get_json()
 
     if "message" in data and "text" in data["message"]:
