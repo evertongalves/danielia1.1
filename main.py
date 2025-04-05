@@ -1,7 +1,7 @@
 from flask import Flask, request
 import requests
 import os
-import openai  # Usaremos a biblioteca openai, porque DeepSeek segue o mesmo padrão!
+import openai  # Usamos a lib openai porque o DeepSeek segue o mesmo padrão!
 
 app = Flask(__name__)
 
@@ -10,7 +10,7 @@ TELEGRAM_TOKEN = os.getenv("BOT_TOKEN")
 DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
 TELEGRAM_API_URL = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/"
 
-# Configuração do cliente DeepSeek (usa a lib openai, com base_url deles!)
+# Configuração do cliente DeepSeek (usa lib openai com base_url deles!)
 client = openai.OpenAI(
     api_key=DEEPSEEK_API_KEY,
     base_url="https://api.deepseek.com/v1",
