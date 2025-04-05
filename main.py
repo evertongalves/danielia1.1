@@ -10,8 +10,8 @@ TELEGRAM_TOKEN = os.getenv("BOT_TOKEN")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 TELEGRAM_API_URL = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/"
 
-# Configura a API Key da OpenAI
-openai.api_key = OPENAI_API_KEY
+# Cria o cliente OpenAI da forma recomendada na versão nova
+client = openai.OpenAI(api_key=OPENAI_API_KEY)
 
 def send_message(chat_id, text):
     url = TELEGRAM_API_URL + "sendMessage"
@@ -23,7 +23,6 @@ def send_message(chat_id, text):
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
-    print(f"Versão da biblioteca OpenAI: {openai.__version__}")  # Debug da versão
     data = request.get_json()
 
     if "message" in data and "text" in data["message"]:
@@ -31,12 +30,14 @@ def webhook():
         user_message = data["message"]["text"]
 
         try:
-            # OpenAI versão >= 1.0.0
-            response = openai.ChatCompletion.create(
+            # Utiliza a nova sintaxe da biblioteca OpenAI
+            response = client.chat.completions.create(
                 model="gpt-3.5-turbo",
                 messages=[{"role": "user", "content": user_message}]
             )
-            reply = response.choices[0].message["content"].strip()
+
+            # Pega o conteúdo da resposta da nova forma
+            reply = response.choices[0].message.content.strip()
 
         except Exception as e:
             reply = f"Erro ao gerar resposta: {str(e)}"
