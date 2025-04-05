@@ -30,7 +30,6 @@ def webhook():
         user_message = data["message"]["text"]
 
         try:
-            # Uso correto da API OpenAI (v1.x.x)
             response = client.chat.completions.create(
                 model="gpt-3.5-turbo",
                 messages=[
@@ -40,9 +39,13 @@ def webhook():
             reply = response.choices[0].message.content.strip()
 
         except openai.RateLimitError:
-            reply = "Atenção! A conta da OpenAI atingiu o limite de uso. Por favor, verifique o plano e a cobrança."
+            reply = "Atenção! Limite de uso da OpenAI atingido."
+        except openai.APIError as e:
+            reply = f"Erro na API OpenAI: {str(e)}"
+        except openai.APIConnectionError:
+            reply = "Erro de conexão com a OpenAI."
         except Exception as e:
-            reply = f"Erro ao gerar resposta: {str(e)}"
+            reply = f"Erro inesperado: {str(e)}"
 
         send_message(chat_id, reply)
 
