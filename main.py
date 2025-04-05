@@ -1,20 +1,20 @@
 from flask import Flask, request
 import requests
 import os
-import openai  # Usamos a lib openai porque o DeepSeek segue o mesmo padrão!
+import groq  # Agora estamos usando a biblioteca do Groq!
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 
 # Variáveis de ambiente
 TELEGRAM_TOKEN = os.getenv("BOT_TOKEN")
-DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 TELEGRAM_API_URL = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/"
 
-# Configuração do cliente DeepSeek (usa lib openai com base_url deles!)
-client = openai.OpenAI(
-    api_key=DEEPSEEK_API_KEY,
-    base_url="https://api.deepseek.com/v1",
-)
+# Configuração do cliente Groq
+client = groq.Groq(api_key=GROQ_API_KEY)
 
 def send_message(chat_id, text):
     url = TELEGRAM_API_URL + "sendMessage"
@@ -34,17 +34,15 @@ def webhook():
 
         try:
             response = client.chat.completions.create(
-                model="deepseek-chat",
+                model="mixtral-8x7b-32768",  # Modelo gratuito e potente do Groq
                 messages=[{"role": "user", "content": user_message}]
             )
             reply = response.choices[0].message.content.strip()
 
-        except openai.RateLimitError:
-            reply = "Atenção! Limite de uso da DeepSeek atingido."
-        except openai.APIError as e:
-            reply = f"Erro na API DeepSeek: {str(e)}"
-        except openai.APIConnectionError:
-            reply = "Erro de conexão com a DeepSeek."
+        except groq.APIError as e:
+            reply = f"Erro na API Groq: {str(e)}"
+        except groq.APIConnectionError:
+            reply = "Erro de conexão com a Groq."
         except Exception as e:
             reply = f"Erro inesperado: {str(e)}"
 
