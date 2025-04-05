@@ -1,17 +1,17 @@
 from flask import Flask, request
 import requests
-from openai import OpenAI
 import os
+import openai
 
 app = Flask(__name__)
 
-# Pega as chaves do ambiente do Railway
+# Variáveis de ambiente
 TELEGRAM_TOKEN = os.getenv("BOT_TOKEN")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 TELEGRAM_API_URL = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/"
 
-# Cliente OpenAI atualizado
-client = OpenAI(api_key=OPENAI_API_KEY)
+# Configura a API Key da OpenAI
+openai.api_key = OPENAI_API_KEY
 
 def send_message(chat_id, text):
     url = TELEGRAM_API_URL + "sendMessage"
@@ -30,11 +30,11 @@ def webhook():
         user_message = data["message"]["text"]
 
         try:
-            response = client.chat.completions.create(
+            response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=[{"role": "user", "content": user_message}]
             )
-            reply = response.choices[0].message.content.strip()
+            reply = response.choices[0].message["content"].strip()
         except Exception as e:
             reply = f"Erro ao gerar resposta: {str(e)}"
 
