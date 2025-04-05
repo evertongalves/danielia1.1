@@ -10,8 +10,8 @@ TELEGRAM_TOKEN = os.getenv("BOT_TOKEN")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 TELEGRAM_API_URL = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/"
 
-# Novo cliente da OpenAI (v1.x.x)
-client = openai.OpenAI(api_key=OPENAI_API_KEY)
+# Configura a chave da API diretamente na biblioteca
+openai.api_key = OPENAI_API_KEY
 
 def send_message(chat_id, text):
     url = TELEGRAM_API_URL + "sendMessage"
@@ -30,13 +30,13 @@ def webhook():
         user_message = data["message"]["text"]
 
         try:
-            response = client.chat.completions.create(
+            response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=[{"role": "user", "content": user_message}]
             )
-            reply = response.choices[0].message.content.strip()
+            reply = response.choices[0].message['content'].strip()
 
-        except openai.RateLimitError:
+        except openai.error.RateLimitError:
             reply = "Atenção! A conta da OpenAI atingiu o limite de uso. Por favor, verifique o plano e a cobrança."
         except Exception as e:
             reply = f"Erro ao gerar resposta: {str(e)}"
