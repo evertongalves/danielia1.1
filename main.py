@@ -30,11 +30,13 @@ def webhook():
         user_message = data["message"]["text"]
 
         try:
-            response = openai.ChatCompletion.create(
+            # Novo formato da biblioteca OpenAI >= 1.0.0
+            response = openai.chat.completions.create(
                 model="gpt-3.5-turbo",
                 messages=[{"role": "user", "content": user_message}]
             )
-            reply = response.choices[0].message["content"].strip()
+            reply = response.choices[0].message.content.strip()
+
         except Exception as e:
             reply = f"Erro ao gerar resposta: {str(e)}"
 
