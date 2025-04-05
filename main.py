@@ -1,15 +1,16 @@
 from flask import Flask, request
 import requests
-import os
 from openai import OpenAI
+import os
 
 app = Flask(__name__)
 
+# Pega as chaves do ambiente do Railway
 TELEGRAM_TOKEN = os.getenv("BOT_TOKEN")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 TELEGRAM_API_URL = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/"
 
-# Cliente da OpenAI atualizado
+# Cliente OpenAI atualizado
 client = OpenAI(api_key=OPENAI_API_KEY)
 
 def send_message(chat_id, text):
