@@ -1,5 +1,5 @@
 
-flask
-requests
-openai
-python-telegram-bot
+Flask>=2.0.0
+requests>=2.25.0
+openai>=1.0.0
+
