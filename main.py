@@ -1,7 +1,7 @@
 from flask import Flask, request
 import requests
 import os
-import groq  # Agora estamos usando a biblioteca do Groq!
+import groq
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -34,7 +34,7 @@ def webhook():
 
         try:
             response = client.chat.completions.create(
-                model="mixtral-8x7b-32768",  # Modelo gratuito e potente do Groq
+                model="llama3-8b-8192",  # modelo atualizado
                 messages=[{"role": "user", "content": user_message}]
             )
             reply = response.choices[0].message.content.strip()
